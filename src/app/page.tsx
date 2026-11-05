@@ -136,7 +136,7 @@ export default function GivePage() {
     <main className="page">
       <div className="shell">
         <header className="topbar">
-          <a className="brand" href="https://cmba.org.in">Cancer Mukt Bharat Abhiyan</a>
+          <a className="brand" href="https://cmba.org.in">Support</a>
           <span className="secure">🔒 Secure donation</span>
         </header>
 

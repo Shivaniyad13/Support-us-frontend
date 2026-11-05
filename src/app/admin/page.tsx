@@ -198,7 +198,7 @@ export default function AdminPage() {
     <main className="page">
       <div className="adminShell">
         <header className="topbar">
-          <a className="brand" href="/">Cancer Mukt Bharat Abhiyan</a>
+          <a className="brand" href="/">Support</a>
           <a className="secure" href="/">View donation form</a>
         </header>
 

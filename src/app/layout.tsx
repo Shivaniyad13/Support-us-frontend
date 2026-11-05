@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Give | Cancer Mukt Bharat Abhiyan",
+  title: "Give | Support",
   description: "Choose who or what you would like to support with a secure donation.",
 };
 
