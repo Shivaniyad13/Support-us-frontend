@@ -104,6 +104,21 @@ a {
   gap: 9px;
 }
 
+.donorDetails,
+.contactRow {
+  display: grid;
+  align-items: end;
+  gap: 16px;
+}
+
+.donorDetails {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.contactRow {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
 .field label,
 .fieldset legend {
   color: #2a3a32;
@@ -174,8 +189,10 @@ a {
   display: flex;
   align-items: center;
   gap: 9px;
+  min-height: 46px;
   color: #52635b;
   font-size: 13px;
+  white-space: nowrap;
 }
 
 .anonymous input {
@@ -266,6 +283,19 @@ a {
 @media (max-width: 420px) {
   .amounts {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .donorDetails {
+    grid-template-columns: 1fr;
+  }
+
+  .contactRow {
+    gap: 8px;
+  }
+
+  .anonymous {
+    min-height: auto;
+    white-space: normal;
   }
 
   .secure {

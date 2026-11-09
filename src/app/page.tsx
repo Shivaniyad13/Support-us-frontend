@@ -17,6 +17,8 @@ type OrderResponse = {
 
 const API_URL = process.env.NEXT_PUBLIC_DONATION_API_URL?.replace(/\/+$/, "");
 const PRESETS = [500, 1000, 2500, 5000];
+const VALID_NAME = /^[\p{L}\p{M}]+(?:[ .'-][\p{L}\p{M}]+)*$/u;
+const VALID_INDIAN_PHONE = /^[6-9]\d{9}$/;
 
 async function requestApi<T>(path: string, init?: RequestInit): Promise<T> {
   if (!API_URL) {
@@ -101,6 +103,14 @@ export default function GivePage() {
       setError("Enter a donation amount of at least ₹1.");
       return;
     }
+    if (!isAnonymous && !VALID_NAME.test(donorName.trim())) {
+      setError("Enter a valid name using letters only.");
+      return;
+    }
+    if (!VALID_INDIAN_PHONE.test(donorPhone)) {
+      setError("Enter a valid 10-digit Indian mobile number.");
+      return;
+    }
 
     setSubmitting(true);
     try {
@@ -181,10 +191,10 @@ export default function GivePage() {
                       {PRESETS.map((preset) => (
                         <button
                           key={preset}
-                          className={`amount${!customAmount && amount === preset ? " amountSelected" : ""}`}
+                          className={`amount${Number(customAmount || amount) === preset ? " amountSelected" : ""}`}
                           type="button"
-                          aria-pressed={!customAmount && amount === preset}
-                          onClick={() => { setAmount(preset); setCustomAmount(""); }}
+                          aria-pressed={Number(customAmount || amount) === preset}
+                          onClick={() => { setAmount(preset); setCustomAmount(String(preset)); }}
                         >
                           ₹{preset.toLocaleString("en-IN")}
                         </button>
@@ -205,55 +215,60 @@ export default function GivePage() {
                     />
                   </fieldset>
 
-                  <div className="field">
-                    <label htmlFor="donor-name">Your name</label>
-                    <input
-                      id="donor-name"
-                      className="input"
-                      autoComplete="name"
-                      required={!isAnonymous}
-                      disabled={isAnonymous}
-                      value={donorName}
-                      onChange={(event) => setDonorName(event.target.value)}
-                      placeholder="Full name"
-                    />
+                  <div className="donorDetails">
+                    <div className="field">
+                      <label htmlFor="donor-name">Your name</label>
+                      <input
+                        id="donor-name"
+                        className="input"
+                        autoComplete="name"
+                        maxLength={90}
+                        required={!isAnonymous}
+                        disabled={isAnonymous}
+                        value={donorName}
+                        onChange={(event) => setDonorName(event.target.value.replace(/[^\p{L}\p{M}\s.'-]/gu, ""))}
+                        placeholder="Full name"
+                      />
+                    </div>
+
+                    <div className="field">
+                      <label htmlFor="donor-email">Email address</label>
+                      <input
+                        id="donor-email"
+                        className="input"
+                        type="email"
+                        autoComplete="email"
+                        required
+                        value={donorEmail}
+                        onChange={(event) => setDonorEmail(event.target.value)}
+                        placeholder="you@example.com"
+                      />
+                    </div>
                   </div>
 
-                  <div className="field">
-                    <label htmlFor="donor-email">Email address</label>
-                    <input
-                      id="donor-email"
-                      className="input"
-                      type="email"
-                      autoComplete="email"
-                      required
-                      value={donorEmail}
-                      onChange={(event) => setDonorEmail(event.target.value)}
-                      placeholder="you@example.com"
-                    />
-                  </div>
+                  <div className="contactRow">
+                    <div className="field">
+                      <label htmlFor="donor-phone">Mobile number</label>
+                      <input
+                        id="donor-phone"
+                        className="input"
+                        type="tel"
+                        autoComplete="tel-national"
+                        inputMode="numeric"
+                        pattern="[6-9][0-9]{9}"
+                        maxLength={10}
+                        required
+                        value={donorPhone}
+                        onChange={(event) => setDonorPhone(event.target.value.replace(/\D/g, "").slice(0, 10))}
+                        placeholder="10-digit Indian mobile number"
+                      />
+                    </div>
 
-                  <div className="field">
-                    <label htmlFor="donor-phone">Mobile number</label>
-                    <input
-                      id="donor-phone"
-                      className="input"
-                      type="tel"
-                      autoComplete="tel-national"
-                      inputMode="numeric"
-                      pattern="[6-9][0-9]{9}"
-                      maxLength={10}
-                      required
-                      value={donorPhone}
-                      onChange={(event) => setDonorPhone(event.target.value.replace(/\D/g, "").slice(0, 10))}
-                      placeholder="10-digit Indian mobile number"
-                    />
+                    <label className="anonymous">
+                      <input type="checkbox" checked={isAnonymous} onChange={(event) => setIsAnonymous(event.target.checked)} />
+                      Keep my name anonymous
+                    </label>
                   </div>
-
-                  <label className="anonymous">
-                    <input type="checkbox" checked={isAnonymous} onChange={(event) => setIsAnonymous(event.target.checked)} />
-                    Keep my name anonymous
-                  </label>
 
                   {error && <p className="notice error" role="alert">{error}</p>}
 
