@@ -191,10 +191,10 @@ export default function GivePage() {
                       {PRESETS.map((preset) => (
                         <button
                           key={preset}
-                          className={`amount${Number(customAmount || amount) === preset ? " amountSelected" : ""}`}
+                          className={`amount${!customAmount && amount === preset ? " amountSelected" : ""}`}
                           type="button"
-                          aria-pressed={Number(customAmount || amount) === preset}
-                          onClick={() => { setAmount(preset); setCustomAmount(String(preset)); }}
+                          aria-pressed={!customAmount && amount === preset}
+                          onClick={() => { setAmount(preset); setCustomAmount(""); }}
                         >
                           ₹{preset.toLocaleString("en-IN")}
                         </button>
