@@ -1,7 +1,33 @@
+# Dependencies
 node_modules/
+
+# Next.js
 .next/
 out/
-*.tsbuildinfo
+build/
+
+# Environment variables
 .env
 .env.*
 !.env.example
+
+# Logs
+*.log
+logs/
+
+# TypeScript
+*.tsbuildinfo
+
+# Cache
+.cache/
+coverage/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Hosting configuration
+vercel.json
+
+# Documentation
+README.md
