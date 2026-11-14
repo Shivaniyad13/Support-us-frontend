@@ -46,6 +46,7 @@ export default function GivePage() {
   const [donorEmail, setDonorEmail] = useState("");
   const [donorPhone, setDonorPhone] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [privacyAccepted, setPrivacyAccepted] = useState(false);
   const [loadingBeneficiaries, setLoadingBeneficiaries] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -99,6 +100,10 @@ export default function GivePage() {
       setError("Please select who or what you would like to support.");
       return;
     }
+    if (!privacyAccepted) {
+      setError("Please read and accept the Donation Privacy Notice before continuing.");
+      return;
+    }
     if (!Number.isFinite(donationAmount) || donationAmount < 1) {
       setError("Enter a donation amount of at least ₹1.");
       return;
@@ -123,6 +128,7 @@ export default function GivePage() {
           donorEmail: donorEmail.trim(),
           donorPhone: donorPhone.trim(),
           isAnonymous,
+          privacyConsent: privacyAccepted,
         }),
       });
       const cashfree = await load({
@@ -270,9 +276,25 @@ export default function GivePage() {
                     </label>
                   </div>
 
+                  <label className="privacyConsent">
+                    <input
+                      type="checkbox"
+                      required
+                      checked={privacyAccepted}
+                      onChange={(event) => setPrivacyAccepted(event.target.checked)}
+                    />
+                    <span>
+                      I have read and agree to the{" "}
+                      <a href="/privacy-notice" target="_blank" rel="noopener noreferrer">
+                        Donation Privacy Notice
+                      </a>
+                      . You must accept it before continuing.
+                    </span>
+                  </label>
+
                   {error && <p className="notice error" role="alert">{error}</p>}
 
-                  <button className="submit" type="submit" disabled={submitting || loadingBeneficiaries || beneficiaries.length === 0}>
+                  <button className="submit" type="submit" disabled={submitting || !privacyAccepted || loadingBeneficiaries || beneficiaries.length === 0}>
                     {submitting ? "Preparing secure checkout…" : `Donate ₹${Number(customAmount || amount).toLocaleString("en-IN")}`}
                   </button>
                   <p className="hint" style={{ textAlign: "center" }}>

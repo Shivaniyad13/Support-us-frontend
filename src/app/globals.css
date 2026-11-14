@@ -201,6 +201,28 @@ a {
   accent-color: #20583a;
 }
 
+.privacyConsent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: #52635b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.privacyConsent input {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  margin: 2px 0 0;
+  accent-color: #20583a;
+}
+
+.privacyConsent a {
+  color: #185439;
+  font-weight: 700;
+}
+
 .submit {
   min-height: 48px;
   border: 0;
@@ -268,6 +290,44 @@ a {
   font-size: 11px;
   line-height: 1.6;
   text-align: center;
+}
+
+.privacyDocument h1 {
+  margin: 0;
+  font-size: 25px;
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+}
+
+.privacyDocument h2 {
+  margin: 28px 0 10px;
+  font-size: 17px;
+}
+
+.privacyDocument p,
+.privacyDocument li,
+.privacyDocument address {
+  color: #52635b;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.privacyDocument p {
+  margin: 10px 0;
+}
+
+.privacyDocument ul {
+  display: grid;
+  gap: 6px;
+  padding-left: 22px;
+}
+
+.privacyDocument address {
+  font-style: normal;
+}
+
+.privacyDocument a {
+  color: #185439;
 }
 
 @media (max-width: 760px) {
