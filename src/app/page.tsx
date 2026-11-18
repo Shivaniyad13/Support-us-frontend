@@ -16,7 +16,6 @@ type OrderResponse = {
 };
 
 const API_URL = process.env.NEXT_PUBLIC_DONATION_API_URL?.replace(/\/+$/, "");
-const PRESETS = [500, 1000, 2500, 5000];
 const VALID_NAME = /^[\p{L}\p{M}]+(?:[ .'-][\p{L}\p{M}]+)*$/u;
 const VALID_INDIAN_PHONE = /^[6-9]\d{9}$/;
 
@@ -40,7 +39,6 @@ async function requestApi<T>(path: string, init?: RequestInit): Promise<T> {
 export default function GivePage() {
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>([]);
   const [beneficiaryId, setBeneficiaryId] = useState("");
-  const [amount, setAmount] = useState(1000);
   const [customAmount, setCustomAmount] = useState("");
   const [donorName, setDonorName] = useState("");
   const [donorEmail, setDonorEmail] = useState("");
@@ -106,7 +104,6 @@ export default function GivePage() {
       const formData = new FormData();
       formData.append("screenshot", paymentScreenshot);
 
-      // Option 1: If your API supports multipart upload
       const response = await fetch(`${API_URL}/donations/upload-screenshot`, {
         method: "POST",
         body: formData,
@@ -130,7 +127,7 @@ export default function GivePage() {
     event.preventDefault();
     setError("");
 
-    const donationAmount = Number(customAmount || amount);
+    const donationAmount = Number(customAmount);
     if (!selectedBeneficiary) {
       setError("Please select who or what you would like to support.");
       return;
@@ -139,7 +136,7 @@ export default function GivePage() {
       setError("Please read and accept the Donation Privacy Notice before continuing.");
       return;
     }
-    if (!Number.isFinite(donationAmount) || donationAmount < 1) {
+    if (!customAmount || !Number.isFinite(donationAmount) || donationAmount < 1) {
       setError("Enter a donation amount of at least ₹1.");
       return;
     }
@@ -238,20 +235,7 @@ export default function GivePage() {
 
                   <fieldset className="fieldset" style={{ border: 0, margin: 0, padding: 0 }}>
                     <legend>Donation amount</legend>
-                    <div className="amounts">
-                      {PRESETS.map((preset) => (
-                        <button
-                          key={preset}
-                          className={`amount${!customAmount && amount === preset ? " amountSelected" : ""}`}
-                          type="button"
-                          aria-pressed={!customAmount && amount === preset}
-                          onClick={() => { setAmount(preset); setCustomAmount(""); }}
-                        >
-                          ₹{preset.toLocaleString("en-IN")}
-                        </button>
-                      ))}
-                    </div>
-                    <label className="hint" htmlFor="custom-amount">Or enter another amount</label>
+                    <label className="hint" htmlFor="custom-amount">Enter donation amount (₹)</label>
                     <input
                       id="custom-amount"
                       className="input"
@@ -260,6 +244,7 @@ export default function GivePage() {
                       max="9999999999.99"
                       step="1"
                       inputMode="numeric"
+                      required
                       value={customAmount}
                       onChange={(event) => setCustomAmount(event.target.value)}
                       placeholder="Amount in rupees"
@@ -409,7 +394,7 @@ export default function GivePage() {
                   {error && <p className="notice error" role="alert">{error}</p>}
 
                   <button className="submit" type="submit" disabled={submitting || !privacyAccepted || loadingBeneficiaries || beneficiaries.length === 0}>
-                    {submitting ? "Preparing secure checkout…" : `Donate ₹${Number(customAmount || amount).toLocaleString("en-IN")}`}
+                    {submitting ? "Preparing secure checkout…" : customAmount ? `Donate ₹${Number(customAmount).toLocaleString("en-IN")}` : "Donate"}
                   </button>
                   <p className="hint" style={{ textAlign: "center" }}>
                     Continuing opens Cashfree's secure payment checkout.
