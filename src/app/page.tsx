@@ -51,6 +51,8 @@ export default function GivePage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [receipt, setReceipt] = useState("");
+  const [paymentScreenshot, setPaymentScreenshot] = useState<File | null>(null);
+  const [screenshotUploading, setScreenshotUploading] = useState(false);
   const verifiedOrder = useRef("");
 
   const selectedBeneficiary = beneficiaries.find(({ id }) => id === beneficiaryId);
@@ -90,6 +92,39 @@ export default function GivePage() {
       setError(verifyError instanceof Error ? verifyError.message : "We could not confirm your payment.");
     });
   }, [verifyPayment]);
+
+  async function handleScreenshotUpload() {
+    if (!paymentScreenshot) {
+      setError("Please select a screenshot file to upload.");
+      return;
+    }
+
+    setScreenshotUploading(true);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("screenshot", paymentScreenshot);
+
+      // Option 1: If your API supports multipart upload
+      const response = await fetch(`${API_URL}/donations/upload-screenshot`, {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || result.success !== true) {
+        throw new Error(result.error || "Screenshot upload failed. Please try again.");
+      }
+
+      setReceipt("Screenshot uploaded successfully. Your payment will be verified manually.");
+    } catch (uploadError) {
+      setError(uploadError instanceof Error ? uploadError.message : "Screenshot upload failed. Please try again.");
+    } finally {
+      setScreenshotUploading(false);
+    }
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -163,6 +198,16 @@ export default function GivePage() {
                 <span className="receiptMark" aria-hidden="true">✓</span>
                 <h2>Thank you for giving</h2>
                 <p>{receipt}</p>
+                <button
+                  onClick={() => {
+                    setReceipt("");
+                    window.history.replaceState({}, "", window.location.pathname);
+                  }}
+                  className="submit"
+                  style={{ marginTop: "16px" }}
+                >
+                  Make another donation
+                </button>
               </div>
             ) : (
               <>
@@ -275,6 +320,75 @@ export default function GivePage() {
                       Keep my name anonymous
                     </label>
                   </div>
+
+                  {/* --- PUBLIC QR CODE & UPI ID SECTION --- */}
+                  <div className="publicQRCodeSection" style={{ marginTop: 24, padding: 16, border: "1px solid #ddd", borderRadius: 8, background: "#fafafa" }}>
+                    <h3 style={{ marginTop: 0, marginBottom: 8 }}>Direct UPI Payment</h3>
+                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                      <img
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=49122452@sbi&pn=Support%20Donation"
+                        alt="UPI QR Code"
+                        width={150}
+                        height={150}
+                        style={{ border: "1px solid #eee", borderRadius: 8 }}
+                      />
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        <p style={{ margin: 0, fontSize: 14 }}>Scan this QR code with any UPI app</p>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span style={{ fontWeight: 600 }}>UPI ID: 49122452@sbi</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText("49122452@sbi");
+                              alert("UPI ID copied to clipboard!");
+                            }}
+                            style={{
+                              padding: "4px 12px",
+                              fontSize: 12,
+                              background: "#e0e0e0",
+                              border: "none",
+                              borderRadius: 4,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* --- SCREENSHOT UPLOAD SECTION --- */}
+                    <div style={{ marginTop: 16 }}>
+                      <h4 style={{ marginBottom: 8 }}>Upload Payment Screenshot</h4>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setPaymentScreenshot(e.target.files?.[0] || null)}
+                        style={{ marginBottom: 8 }}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleScreenshotUpload}
+                        disabled={screenshotUploading || !paymentScreenshot}
+                        style={{
+                          padding: "8px 16px",
+                          background: "#0070f3",
+                          color: "#fff",
+                          border: "none",
+                          borderRadius: 4,
+                          cursor: "pointer",
+                        }}
+                      >
+                        {screenshotUploading ? "Uploading…" : "Upload Screenshot"}
+                      </button>
+                      {paymentScreenshot && (
+                        <p style={{ marginTop: 4, fontSize: 12 }}>
+                          Selected: {paymentScreenshot.name}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  {/* --- END PUBLIC QR CODE & UPI ID SECTION --- */}
 
                   <label className="privacyConsent">
                     <input
