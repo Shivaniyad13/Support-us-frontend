@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Give | Support",
   description: "Choose who or what you would like to support with a secure donation.",
+  icons: {
+    icon: "/logo.png", // public/logo.png ka path
+  },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

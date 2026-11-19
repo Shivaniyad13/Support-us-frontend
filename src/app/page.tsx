@@ -212,193 +212,208 @@ export default function GivePage() {
                 <p className="subheading">Choose where you would like your contribution to go.</p>
 
                 <form className="form" onSubmit={handleSubmit}>
-                  <div className="field">
-                    <label htmlFor="beneficiary">I want to support</label>
-                    <select
-                      id="beneficiary"
-                      className="select"
-                      required
-                      disabled={loadingBeneficiaries || beneficiaries.length === 0}
-                      value={beneficiaryId}
-                      onChange={(event) => setBeneficiaryId(event.target.value)}
-                    >
-                      {loadingBeneficiaries && <option value="">Loading donation options…</option>}
-                      {!loadingBeneficiaries && beneficiaries.length === 0 && <option value="">No donation options available</option>}
-                      {beneficiaries.map((beneficiary) => (
-                        <option key={beneficiary.id} value={beneficiary.id}>
-                          {beneficiary.name}
-                        </option>
-                      ))}
-                    </select>
-                    {selectedBeneficiary && <p className="hint">{selectedBeneficiary.description}</p>}
-                  </div>
 
-                  <fieldset className="fieldset" style={{ border: 0, margin: 0, padding: 0 }}>
-                    <legend>Donation amount</legend>
-                    <label className="hint" htmlFor="custom-amount">Enter donation amount (₹)</label>
-                    <input
-                      id="custom-amount"
-                      className="input"
-                      type="number"
-                      min="1"
-                      max="9999999999.99"
-                      step="1"
-                      inputMode="numeric"
-                      required
-                      value={customAmount}
-                      onChange={(event) => setCustomAmount(event.target.value)}
-                      placeholder="Amount in rupees"
-                    />
-                  </fieldset>
+                  {/* FLEX WRAPPER START */}
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "32px", alignItems: "flex-start" }}>
 
-                  <div className="donorDetails">
-                    <div className="field">
-                      <label htmlFor="donor-name">Your name</label>
-                      <input
-                        id="donor-name"
-                        className="input"
-                        autoComplete="name"
-                        maxLength={90}
-                        required={!isAnonymous}
-                        disabled={isAnonymous}
-                        value={donorName}
-                        onChange={(event) => setDonorName(event.target.value.replace(/[^\p{L}\p{M}\s.'-]/gu, ""))}
-                        placeholder="Full name"
-                      />
-                    </div>
+                    {/* LEFT SIDE: FORM FIELDS */}
+                    <div style={{ flex: "1 1 400px", display: "flex", flexDirection: "column", gap: "20px" }}>
+                      <div className="field">
+                        <label htmlFor="beneficiary">I want to support</label>
+                        <select
+                          id="beneficiary"
+                          className="select"
+                          required
+                          disabled={loadingBeneficiaries || beneficiaries.length === 0}
+                          value={beneficiaryId}
+                          onChange={(event) => setBeneficiaryId(event.target.value)}
+                        >
+                          {loadingBeneficiaries && <option value="">Loading donation options…</option>}
+                          {!loadingBeneficiaries && beneficiaries.length === 0 && <option value="">No donation options available</option>}
+                          {beneficiaries.map((beneficiary) => (
+                            <option key={beneficiary.id} value={beneficiary.id}>
+                              {beneficiary.name}
+                            </option>
+                          ))}
+                        </select>
+                        {selectedBeneficiary && <p className="hint">{selectedBeneficiary.description}</p>}
+                      </div>
 
-                    <div className="field">
-                      <label htmlFor="donor-email">Email address</label>
-                      <input
-                        id="donor-email"
-                        className="input"
-                        type="email"
-                        autoComplete="email"
-                        required
-                        value={donorEmail}
-                        onChange={(event) => setDonorEmail(event.target.value)}
-                        placeholder="you@example.com"
-                      />
-                    </div>
-                  </div>
+                      <fieldset className="fieldset" style={{ border: 0, margin: 0, padding: 0 }}>
+                        <legend>Donation amount</legend>
+                        <label className="hint" htmlFor="custom-amount">Enter donation amount (₹)</label>
+                        <input
+                          id="custom-amount"
+                          className="input"
+                          type="number"
+                          min="1"
+                          max="9999999999.99"
+                          step="1"
+                          inputMode="numeric"
+                          required
+                          value={customAmount}
+                          onChange={(event) => setCustomAmount(event.target.value)}
+                          placeholder="Amount in rupees"
+                        />
+                      </fieldset>
 
-                  <div className="contactRow">
-                    <div className="field">
-                      <label htmlFor="donor-phone">Mobile number</label>
-                      <input
-                        id="donor-phone"
-                        className="input"
-                        type="tel"
-                        autoComplete="tel-national"
-                        inputMode="numeric"
-                        pattern="[6-9][0-9]{9}"
-                        maxLength={10}
-                        required
-                        value={donorPhone}
-                        onChange={(event) => setDonorPhone(event.target.value.replace(/\D/g, "").slice(0, 10))}
-                        placeholder="10-digit Indian mobile number"
-                      />
-                    </div>
-
-                    <label className="anonymous">
-                      <input type="checkbox" checked={isAnonymous} onChange={(event) => setIsAnonymous(event.target.checked)} />
-                      Keep my name anonymous
-                    </label>
-                  </div>
-
-                  {/* --- PUBLIC QR CODE & UPI ID SECTION --- */}
-                  <div className="publicQRCodeSection" style={{ marginTop: 24, padding: 16, border: "1px solid #ddd", borderRadius: 8, background: "#fafafa" }}>
-                    <h3 style={{ marginTop: 0, marginBottom: 8 }}>Direct UPI Payment</h3>
-                    <div style={{ display: "flex", flexDirection: "row", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-                      <img
-                        src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=49122452@sbi&pn=Support%20Donation"
-                        alt="UPI QR Code"
-                        width={150}
-                        height={150}
-                        style={{ border: "1px solid #eee", borderRadius: 8 }}
-                      />
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                        <p style={{ margin: 0, fontSize: 14 }}>Scan this QR code with any UPI app</p>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ fontWeight: 600 }}>UPI ID: 49122452@sbi</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              navigator.clipboard.writeText("49122452@sbi");
-                              alert("UPI ID copied to clipboard!");
-                            }}
-                            style={{
-                              padding: "4px 12px",
-                              fontSize: 12,
-                              background: "#e0e0e0",
-                              border: "none",
-                              borderRadius: 4,
-                              cursor: "pointer",
-                            }}
-                          >
-                            Copy
-                          </button>
+                      <div className="donorDetails">
+                        <div className="field">
+                          <label htmlFor="donor-name">Your name</label>
+                          <input
+                            id="donor-name"
+                            className="input"
+                            autoComplete="name"
+                            maxLength={90}
+                            required={!isAnonymous}
+                            disabled={isAnonymous}
+                            value={donorName}
+                            onChange={(event) => setDonorName(event.target.value.replace(/[^\p{L}\p{M}\s.'-]/gu, ""))}
+                            placeholder="Full name"
+                          />
                         </div>
+
+                        <div className="field">
+                          <label htmlFor="donor-email">Email address</label>
+                          <input
+                            id="donor-email"
+                            className="input"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            value={donorEmail}
+                            onChange={(event) => setDonorEmail(event.target.value)}
+                            placeholder="you@example.com"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="contactRow">
+                        <div className="field">
+                          <label htmlFor="donor-phone">Mobile number</label>
+                          <input
+                            id="donor-phone"
+                            className="input"
+                            type="tel"
+                            autoComplete="tel-national"
+                            inputMode="numeric"
+                            pattern="[6-9][0-9]{9}"
+                            maxLength={10}
+                            required
+                            value={donorPhone}
+                            onChange={(event) => setDonorPhone(event.target.value.replace(/\D/g, "").slice(0, 10))}
+                            placeholder="10-digit Indian mobile number"
+                          />
+                        </div>
+
+                        <label className="anonymous">
+                          <input type="checkbox" checked={isAnonymous} onChange={(event) => setIsAnonymous(event.target.checked)} />
+                          Keep my name anonymous
+                        </label>
                       </div>
                     </div>
 
-                    {/* --- SCREENSHOT UPLOAD SECTION --- */}
-                    <div style={{ marginTop: 16 }}>
-                      <h4 style={{ marginBottom: 8 }}>Upload Payment Screenshot</h4>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => setPaymentScreenshot(e.target.files?.[0] || null)}
-                        style={{ marginBottom: 8 }}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleScreenshotUpload}
-                        disabled={screenshotUploading || !paymentScreenshot}
-                        style={{
-                          padding: "8px 16px",
-                          background: "#0070f3",
-                          color: "#fff",
-                          border: "none",
-                          borderRadius: 4,
-                          cursor: "pointer",
-                        }}
-                      >
-                        {screenshotUploading ? "Uploading…" : "Upload Screenshot"}
-                      </button>
-                      {paymentScreenshot && (
-                        <p style={{ marginTop: 4, fontSize: 12 }}>
-                          Selected: {paymentScreenshot.name}
-                        </p>
-                      )}
+                    {/* RIGHT SIDE: UPI PAYMENT SECTION */}
+                    <div style={{ flex: "1 1 300px", marginTop: 0 }}>
+                      <div className="publicQRCodeSection" style={{ padding: 20, border: "1px solid #ddd", borderRadius: 8, background: "#fafafa" }}>
+                        <h3 style={{ marginTop: 0, marginBottom: 12 }}>Direct UPI Payment</h3>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+                          <img
+                            src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=49122452@sbi&pn=Support%20Donation"
+                            alt="UPI QR Code"
+                            width={150}
+                            height={150}
+                            style={{ border: "1px solid #eee", borderRadius: 8 }}
+                          />
+                          <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "center", textAlign: "center" }}>
+                            <p style={{ margin: 0, fontSize: 14 }}>Scan this QR code with any UPI app</p>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <span style={{ fontWeight: 600 }}>UPI ID: 49122452@sbi</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  navigator.clipboard.writeText("49122452@sbi");
+                                  alert("UPI ID copied to clipboard!");
+                                }}
+                                style={{
+                                  padding: "4px 12px",
+                                  fontSize: 12,
+                                  background: "#e0e0e0",
+                                  border: "none",
+                                  borderRadius: 4,
+                                  cursor: "pointer",
+                                }}
+                              >
+                                Copy
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* --- SCREENSHOT UPLOAD SECTION --- */}
+                        <div style={{ marginTop: 24, paddingTop: 16, borderTop: "1px solid #ddd" }}>
+                          <h4 style={{ marginBottom: 8 }}>Upload Payment Screenshot</h4>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => setPaymentScreenshot(e.target.files?.[0] || null)}
+                            style={{ marginBottom: 8, width: "100%" }}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleScreenshotUpload}
+                            disabled={screenshotUploading || !paymentScreenshot}
+                            style={{
+                              padding: "8px 16px",
+                              background: "#0070f3",
+                              color: "#fff",
+                              border: "none",
+                              borderRadius: 4,
+                              cursor: "pointer",
+                              width: "100%",
+                            }}
+                          >
+                            {screenshotUploading ? "Uploading…" : "Upload Screenshot"}
+                          </button>
+                          {paymentScreenshot && (
+                            <p style={{ marginTop: 8, fontSize: 12, textAlign: "center" }}>
+                              Selected: {paymentScreenshot.name}
+                            </p>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  {/* --- END PUBLIC QR CODE & UPI ID SECTION --- */}
+                  {/* FLEX WRAPPER END */}
 
-                  <label className="privacyConsent">
-                    <input
-                      type="checkbox"
-                      required
-                      checked={privacyAccepted}
-                      onChange={(event) => setPrivacyAccepted(event.target.checked)}
-                    />
-                    <span>
-                      I have read and agree to the{" "}
-                      <a href="/privacy-notice" target="_blank" rel="noopener noreferrer">
-                        Donation Privacy Notice
-                      </a>
-                      . You must accept it before continuing.
-                    </span>
-                  </label>
+                  {/* BOTTOM SECTION: PRIVACY & SUBMIT BUTTON */}
+                  <div style={{ marginTop: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+                    <label className="privacyConsent">
+                      <input
+                        type="checkbox"
+                        required
+                        checked={privacyAccepted}
+                        onChange={(event) => setPrivacyAccepted(event.target.checked)}
+                      />
+                      <span>
+                        I have read and agree to the{" "}
+                        <a href="/privacy-notice" target="_blank" rel="noopener noreferrer">
+                          Donation Privacy Notice
+                        </a>
+                        . You must accept it before continuing.
+                      </span>
+                    </label>
 
-                  {error && <p className="notice error" role="alert">{error}</p>}
+                    {error && <p className="notice error" role="alert">{error}</p>}
 
-                  <button className="submit" type="submit" disabled={submitting || !privacyAccepted || loadingBeneficiaries || beneficiaries.length === 0}>
-                    {submitting ? "Preparing secure checkout…" : customAmount ? `Donate ₹${Number(customAmount).toLocaleString("en-IN")}` : "Donate"}
-                  </button>
-                  <p className="hint" style={{ textAlign: "center" }}>
-                    Continuing opens Cashfree's secure payment checkout.
-                  </p>
+                    <button className="submit" type="submit" disabled={submitting || !privacyAccepted || loadingBeneficiaries || beneficiaries.length === 0}>
+                      {submitting ? "Preparing secure checkout…" : customAmount ? `Donate ₹${Number(customAmount).toLocaleString("en-IN")}` : "Donate"}
+                    </button>
+                    <p className="hint" style={{ textAlign: "center", margin: 0 }}>
+                      Continuing opens Cashfree's secure payment checkout.
+                    </p>
+                  </div>
+
                 </form>
               </>
             )}
